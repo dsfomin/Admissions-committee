@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="fragments/head.html :: head"></head>
+<body>
+
+    <header th:replace="fragments/header.html :: header"></header>
+
+    <form th:action="@{/user}" method="post">
+        <input type="text" name="username" th:value="${user.getUsername()}">
+        <div th:each="role : ${roles}">
+            <label for="role"></label>
+            <input id="role" th:name="${role}" th:text="${role.name()}"  th:checked="${#lists.contains(user.getRoles(), role)}" type="checkbox">
+        </div>
+        <input type="hidden" name="userId" th:value="${user.getId()}">
+        <button th:type="submit" th:utext="Save"></button>
+    </form>
+
+    <div th:replace="fragments/script.html :: script"></div>
+</body>
+</html>

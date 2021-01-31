@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="fragments/head.html :: head"></head>
+<body>
+    <header th:replace="fragments/header.html :: header"></header>
+
+    <table>
+        <thead>
+            <tr>
+                <th>Username</th>
+                <th>Roles</th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr th:each="user : ${users}">
+                <td th:text="${user.username}"></td>
+                <td>
+                    <span th:each="role, iterStat : ${user.roles}" th:text=" ${role} + (${iterStat.size-1 > iterStat.index} ? ',' : '')"></span>
+                </td>
+                <td><a th:href="@{/user/{id}(id=${user.id})}" th:text="edit"></a></td>
+            </tr>
+        </tbody>
+    </table>
+
+    <div th:replace="fragments/script.html :: script"></div>
+</body>
+</html>

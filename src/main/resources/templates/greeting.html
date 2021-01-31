@@ -1,0 +1,13 @@
+<!DOCTYPE HTML>
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="fragments/head.html :: head"></head>
+<body>
+    <header th:replace="fragments/header.html :: header"></header>
+
+    <h1 th:text="#{welcome.message}"></h1>
+    <a href="/main">Main page</a>
+
+
+    <div th:replace="fragments/script.html :: script"></div>
+</body>
+</html>
