@@ -19,14 +19,8 @@ public class FacultyController {
     private final FacultyService facultyService;
 
     @GetMapping
-    public String userList(
-                           @RequestParam(defaultValue = "0") Integer pageNo,
-                           @RequestParam(defaultValue = "10") Integer pageSize,
-                           @RequestParam(defaultValue = "name") String sortBy,
-                           @RequestParam(defaultValue = "asc") String order,
-                           Model model
-    ) {
-        model.addAttribute("facultiesPage", facultyService.findAll(pageNo, pageSize, order, sortBy));
+    public String userList(Model model) {
+        model.addAttribute("faculties", facultyService.findAll());
 
         return "facultyList";
     }
