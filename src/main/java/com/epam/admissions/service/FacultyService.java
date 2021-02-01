@@ -16,6 +16,7 @@ import java.util.Optional;
 public class FacultyService {
 
     private final FacultyRepository facultyRepository;
+    private final static Sort.Direction DEFAULT_SORT_DIRECTION = Sort.Direction.ASC;
 
     public Page<Faculty> findAll(Pageable pageable) {
         return facultyRepository.findAll(pageable);
@@ -30,9 +31,13 @@ public class FacultyService {
     }
 
     public Page<Faculty> findAll(Integer pageNo, Integer pageSize, String order, String sortBy) {
-        Sort.Direction direction = order.equals("acs") ? Sort.Direction.ASC : Sort.Direction.DESC;
+        Sort.Direction direction = order.equals("desc") ? Sort.Direction.DESC : DEFAULT_SORT_DIRECTION;
         Pageable pageable = PageRequest.of(pageNo, pageSize, Sort.by(direction, sortBy));
 
         return facultyRepository.findAll(pageable);
+    }
+
+    public void deleteById(Long id) {
+        facultyRepository.deleteById(id);
     }
 }

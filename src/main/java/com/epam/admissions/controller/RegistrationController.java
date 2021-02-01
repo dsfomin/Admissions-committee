@@ -2,18 +2,15 @@ package com.epam.admissions.controller;
 
 import com.epam.admissions.entity.User;
 import com.epam.admissions.entity.UserRole;
-import com.epam.admissions.repository.UserRepository;
 import com.epam.admissions.service.UserService;
 import lombok.AllArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.lang.NonNull;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 
-import java.util.Collections;
-import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 
@@ -30,7 +27,7 @@ public class RegistrationController {
     }
 
     @PostMapping("/registration")
-    public String addUser(User user, Model model) {
+    public String addUser(@NonNull User user, Model model) {
         Optional<User> userFromDb = userService.findByEmail(user.getEmail());
 
         if (userFromDb.isPresent()) {

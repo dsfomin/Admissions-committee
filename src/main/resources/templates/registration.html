@@ -4,13 +4,16 @@
 <body>
     <header th:replace="fragments/header.html :: header"></header>
 
-    Add new user
-    <div th:if="${message != null}" th:utext="${message}"></div>
-    <form th:action="@{/registration}" method="post">
-        <div><label> Email : <input type="text" name="email"/> </label></div>
-        <div><label> Password: <input type="password" name="password"/> </label></div>
-        <div><input type="submit" value="Register"/></div>
-    </form>
+    <div class="container mt-3">
+        Add new user
+        <div th:if="${message != null}" th:utext="${message}"></div>
+        <form th:action="@{/registration}" method="post">
+            <div><label> Email : <input type="text" name="email"/> </label></div>
+            <div><label> Password: <input type="password" name="password"/> </label></div>
+            <div><input type="submit" value="Register"/></div>
+        </form>
+    </div>
+
     <div th:replace="fragments/script.html :: script"></div>
 </body>
 </html>

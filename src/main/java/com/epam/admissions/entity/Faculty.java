@@ -16,7 +16,7 @@ import java.util.Set;
 public class Faculty {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private String name;
     private Integer budgetPlaces;
@@ -26,4 +26,14 @@ public class Faculty {
     private Set<User> candidates;
 
     private Boolean finalized;
+
+    @Override
+    public String toString() {
+        return "[" +
+                "id = " + id + ", " +
+                "name = " + name + ", " +
+                "budgetPlaces = " + budgetPlaces + ", " +
+                "contractPlaces = " + contractPlaces + ", " +
+                "]";
+    }
 }

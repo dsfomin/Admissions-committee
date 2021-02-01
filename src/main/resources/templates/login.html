@@ -4,21 +4,23 @@
 <body>
     <header th:replace="fragments/header.html :: header"></header>
 
-    Login page
-    <form th:action="@{/signin}" method="post">
-        <div>
-            <label for="email" th:text="#{login.email}"></label>
-            <input th:class="col-2" type="text" class="form-control" id="email" name="email"
-                   placeholder="Username">
-        </div>
-        <div>
-            <label for="password">Password</label>
-            <input th:class="col-2" type="password" class="form-control" id="password" name="password"
-                   placeholder="Password">
-        </div>
-        <div><input type="submit" value="Sign In"/></div>
-    </form>
-    <a href="/registration">Add new user</a>
+    <div class="container mt-3">
+        Login page
+        <form th:action="@{/signin}" method="post">
+            <div>
+                <label for="email" th:text="#{login.email}"></label>
+                <input th:class="col-2" type="text" class="form-control" id="email" name="email"
+                       placeholder="Username">
+            </div>
+            <div>
+                <label for="password">Password</label>
+                <input th:class="col-2" type="password" class="form-control" id="password" name="password"
+                       placeholder="Password">
+            </div>
+            <div><input type="submit" value="Sign In"/></div>
+        </form>
+        <a href="/registration">Add new user</a>
+    </div>
 
     <div th:replace="fragments/script.html :: script"></div>
 </body>

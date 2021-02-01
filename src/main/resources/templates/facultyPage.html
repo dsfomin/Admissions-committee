@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:sec="http://www.thymeleaf.org/extras/spring-security" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="fragments/head.html :: head"></head>
+<body>
+
+    <header th:replace="fragments/header.html :: header"></header>
+
+    <div class="container mt-3">
+        <h4 class="mb-3" th:text="'Faculty: ' + ${faculty.name}"></h4>
+        <p class="mb-2" th:text="'Count of budget places: ' + ${faculty.budgetPlaces}"></p>
+        <p class="mb-2" th:text="'Count of contract places: ' + ${faculty.contractPlaces}"></p>
+
+        <div th:switch="${alreadyParticipate}">
+            <p th:case="true" th:text="|You already participate|"></p>
+            <p th:case="false">
+                <a class="btn btn-primary" th:href="@{/faculty/{id}/participate(id=${faculty.id})}" th:text="Participate" type="submit"></a>
+            </p>
+        </div>
+    </div>
+
+    <div th:replace="fragments/script.html :: script"></div>
+</body>
+</html>

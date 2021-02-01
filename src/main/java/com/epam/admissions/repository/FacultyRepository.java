@@ -12,5 +12,7 @@ import java.util.Optional;
 public interface FacultyRepository extends JpaRepository<Faculty, Long> {
     Optional<Faculty> findByName(String name);
 
+    void deleteById(Long id);
+
     Page<Faculty> findAll(Pageable pageable);
 }

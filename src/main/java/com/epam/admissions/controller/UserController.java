@@ -2,9 +2,9 @@ package com.epam.admissions.controller;
 
 import com.epam.admissions.entity.User;
 import com.epam.admissions.entity.UserRole;
-import com.epam.admissions.repository.UserRepository;
 import com.epam.admissions.service.UserService;
 import lombok.AllArgsConstructor;
+import org.springframework.lang.NonNull;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -24,13 +24,15 @@ public class UserController {
     private final UserService userService;
 
     @GetMapping
-    public String userList(Model model) {
+    public String userList(@NonNull Model model) {
         model.addAttribute("users", userService.findAll());
+        model.addAttribute("adminRole", UserRole.ADMIN);
+
         return "userList";
     }
 
-    @GetMapping("{user}")
-    public String userEditForm(@PathVariable User user, Model model) {
+    @GetMapping("/edit/{user}")
+    public String userEditForm(@PathVariable User user, @NonNull Model model) {
         model.addAttribute("user", user);
         model.addAttribute("roles", UserRole.values());
         model.addAttribute("userRoles", user.getRoles());
@@ -38,11 +40,25 @@ public class UserController {
         return "userEdit";
     }
 
+    @GetMapping("/block/{user}")
+    public String userBlock(@PathVariable @NonNull User user, Model model) {
+        userService.blockUser(user.getId());
+
+        return "redirect:/user";
+    }
+
+    @GetMapping("/unblock/{user}")
+    public String userUnblock(@PathVariable @NonNull User user, Model model) {
+        userService.unblockUser(user.getId());
+
+        return "redirect:/user";
+    }
+
     @PostMapping
     public String userSave(
             @RequestParam String email,
-            @RequestParam Map<String, String> form,
-            @RequestParam ("userId") User user
+            @RequestParam @NonNull Map<String, String> form,
+            @RequestParam ("userId") @NonNull User user
             ) {
         user.setEmail(email);
         user.getRoles().clear();

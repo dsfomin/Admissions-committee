@@ -4,7 +4,7 @@ import com.epam.admissions.entity.Message;
 import com.epam.admissions.entity.User;
 import com.epam.admissions.repository.MessageRepository;
 import lombok.AllArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.lang.NonNull;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -13,7 +13,6 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import java.util.List;
-import java.util.Map;
 
 @Controller
 @AllArgsConstructor
@@ -27,7 +26,7 @@ public class MainController {
     }
 
     @GetMapping("/main")
-    public String main(@RequestParam(required = false, defaultValue = "") String filter, Model model) {
+    public String main(@RequestParam(required = false, defaultValue = "") String filter, @NonNull Model model) {
         List<Message> messages = (filter != null && !filter.isEmpty()) ?
                 messageRepo.findByTag(filter) : messageRepo.findAll();
 
@@ -42,7 +41,7 @@ public class MainController {
             @AuthenticationPrincipal User user,
             @RequestParam String text,
             @RequestParam String tag,
-            Model model
+            @NonNull Model model
     ) {
         messageRepo.save(new Message(text, tag, user));
         model.addAttribute("messages", messageRepo.findAll());

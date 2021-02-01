@@ -3,11 +3,9 @@
 <head th:replace="fragments/head.html :: head"></head>
 <body>
     <header th:replace="fragments/header.html :: header"></header>
-
-    <h1 th:text="#{welcome.message}"></h1>
-    <a href="/main">Main page</a>
-
-
+    <div class="container mt-3">
+        <h1 th:text="#{welcome.message}"></h1>
+    </div>
     <div th:replace="fragments/script.html :: script"></div>
 </body>
 </html>

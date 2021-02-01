@@ -1,27 +1,36 @@
 <!DOCTYPE html>
-<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<html lang="en" xmlns:sec="http://www.thymeleaf.org/extras/spring-security"  xmlns:th="http://www.thymeleaf.org">
 <head th:replace="fragments/head.html :: head"></head>
 <body>
     <header th:replace="fragments/header.html :: header"></header>
 
-    <table>
-        <thead>
+    <div class="container mt-3">
+        <table class="table table-hover table-striped table-bordered ">
+            <thead>
             <tr>
-                <th>Username</th>
+                <th>Email</th>
                 <th>Roles</th>
-                <th></th>
+                <th sec:authorize="hasAuthority('ADMIN')"></th>
+                <th sec:authorize="hasAuthority('ADMIN')"></th>
             </tr>
-        </thead>
-        <tbody>
+            </thead>
+            <tbody>
             <tr th:each="user : ${users}">
                 <td th:text="${user.username}"></td>
                 <td>
-                    <span th:each="role, iterStat : ${user.roles}" th:text=" ${role} + (${iterStat.size-1 > iterStat.index} ? ',' : '')"></span>
+                    <span th:each="role, iterStat : ${user.roles}" th:text=" ${role} + (${iterStat.size-1 > iterStat.index} ? ', ' : '')"></span>
                 </td>
-                <td><a th:href="@{/user/{id}(id=${user.id})}" th:text="edit"></a></td>
+                <td><a class="btn btn-primary" th:if="!${#sets.contains(user.roles, adminRole)}" th:href="@{/user/edit/{id}(id=${user.id})}" th:text="Edit"></a></td>
+                <td>
+                    <div th:switch="${user.active}">
+                        <p th:case="true"><a class="btn btn-primary" th:if="!${#sets.contains(user.roles, adminRole)}" th:href="@{/user/block/{id}(id=${user.id})}" th:text="Block"></a></p>
+                        <p th:case="false"><a class="btn btn-primary" th:if="!${#sets.contains(user.roles, adminRole)}" th:href="@{/user/unblock/{id}(id=${user.id})}" th:text="Unblock"></a></p>
+                    </div>
+                </td>
             </tr>
-        </tbody>
-    </table>
+            </tbody>
+        </table>
+    </div>
 
     <div th:replace="fragments/script.html :: script"></div>
 </body>
