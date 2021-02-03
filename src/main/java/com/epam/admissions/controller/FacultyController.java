@@ -13,8 +13,8 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.Optional;
-import java.util.function.Predicate;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @Slf4j
 @Controller
@@ -77,15 +77,27 @@ public class FacultyController {
                 new IllegalStateException("user with such name not found"));
 
         model.addAttribute("faculty", faculty);
+        model.addAttribute("alreadyParticipate", isUserAlreadyParticipate(userFromDb, faculty));
+        model.addAttribute("budgetPlaces", faculty.getBudgetPlaces());
+        model.addAttribute("contractPlaces", faculty.getContractPlaces());
+        model.addAttribute("usersTop", getTopUsersByNotes(faculty.getCandidates()));
 
-        boolean alreadyParticipate = userFromDb.getSelectedFaculties()
+        return "facultyPage";
+    }
+
+    private Boolean isUserAlreadyParticipate(User user, Faculty faculty) {
+        return user.getSelectedFaculties()
                 .stream()
                 .map(Faculty::getName)
                 .anyMatch(faculty.getName()::equals);
+    }
 
-        model.addAttribute("alreadyParticipate", alreadyParticipate);
-
-        return "facultyPage";
+    private Set<User> getTopUsersByNotes(Set<User> candidates) {
+        return candidates.stream()
+                .sorted(Comparator.comparingDouble(
+                        u -> u.getNotes().stream()
+                        .mapToDouble(x -> x).average().orElse(0.0)))
+                .collect(Collectors.toCollection(LinkedHashSet::new));
     }
 
     @PostMapping
@@ -124,11 +136,18 @@ public class FacultyController {
         return "redirect:/faculty";
     }
 
+    @PreAuthorize("hasAuthority('USER') && !hasAuthority('ADMIN')")
     @GetMapping("/{faculty}/participate")
     public String participateFaculty(@PathVariable Faculty faculty,
                                      @AuthenticationPrincipal User user) {
         userService.participate(user, faculty);
 
+        return "redirect:/faculty/" + faculty.getId();
+    }
+
+    @GetMapping("/{faculty}/finalize")
+    public String finalizeFaculty(@PathVariable Faculty faculty) {
+        facultyService.finalizeFaculty(faculty);
         return "redirect:/faculty/" + faculty.getId();
     }
 }

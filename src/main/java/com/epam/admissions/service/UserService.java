@@ -27,11 +27,11 @@ public class UserService implements UserDetailsService {
         return userRepository.findByEmail(username);
     }
 
-    public User save(User user) {
+    public User saveUser(User user) {
         return userRepository.save(user);
     }
 
-    public List<User> findAll() {
+    public List<User> findAllUsers() {
         return userRepository.findAll();
     }
 

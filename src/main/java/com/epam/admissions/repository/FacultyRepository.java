@@ -4,7 +4,10 @@ import com.epam.admissions.entity.Faculty;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
+import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Optional;
 
@@ -15,4 +18,9 @@ public interface FacultyRepository extends JpaRepository<Faculty, Long> {
     void deleteById(Long id);
 
     Page<Faculty> findAll(Pageable pageable);
+
+    @Modifying
+    @Query("update Faculty f set f.finalized=1 where f.id=?1")
+    @Transactional
+    void finalizeFaculty(Long id);
 }

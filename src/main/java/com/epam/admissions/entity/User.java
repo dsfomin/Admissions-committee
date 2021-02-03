@@ -7,7 +7,9 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import javax.persistence.*;
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 import java.util.Set;
 
 @Entity
@@ -33,6 +35,9 @@ public class User implements UserDetails {
             joinColumns = @JoinColumn(name = "user_id"),
             inverseJoinColumns = @JoinColumn(name = "faculty_id"))
     private Set<Faculty> selectedFaculties;
+
+    @ElementCollection
+    private List<Double> notes;
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {

@@ -18,7 +18,7 @@
             <tr th:each="user : ${users}">
                 <td th:text="${user.username}"></td>
                 <td>
-                    <span th:each="role, iterStat : ${user.roles}" th:text=" ${role} + (${iterStat.size-1 > iterStat.index} ? ', ' : '')"></span>
+                    <span th:each="role, iterStat : ${user.roles}" th:text=" ${role} + (${iterStat.size > iterStat.index + 1} ? ', ' : '')"></span>
                 </td>
                 <td><a class="btn btn-primary" th:if="!${#sets.contains(user.roles, adminRole)}" th:href="@{/user/edit/{id}(id=${user.id})}" th:text="Edit"></a></td>
                 <td>

@@ -10,11 +10,30 @@
         <p class="mb-2" th:text="'Count of budget places: ' + ${faculty.budgetPlaces}"></p>
         <p class="mb-2" th:text="'Count of contract places: ' + ${faculty.contractPlaces}"></p>
 
-        <div th:switch="${alreadyParticipate}">
+        <div sec:authorize="!hasAuthority('ADMIN') && hasAuthority('USER')" th:switch="${alreadyParticipate}">
             <p th:case="true" th:text="|You already participate|"></p>
             <p th:case="false">
                 <a class="btn btn-primary" th:href="@{/faculty/{id}/participate(id=${faculty.id})}" th:text="Participate" type="submit"></a>
             </p>
+        </div>
+
+
+        <div>
+            <a sec:authorize="hasAuthority('ADMIN')"  th:if="${faculty.getFinalized() == false}" class="btn btn-primary" th:href="@{/faculty/{id}/finalize(id=${faculty.id})}" th:text="Finalize"></a>
+            <table th:if="${faculty.getFinalized() == true}" class="table table-hover table-bordered ">
+                <thead>
+                    <tr>
+                        <th>Email</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr th:each="user, iterStat : ${usersTop}">
+                        <td th:if="${faculty.getBudgetPlaces() > iterStat.index}" style="background-color:rgba(0,128,0,0.3)" th:text="${user.getEmail()}"></td>
+                        <td th:if="${faculty.getBudgetPlaces() + faculty.getContractPlaces() > iterStat.index && faculty.getBudgetPlaces() <= iterStat.index}" style="background-color:rgba(0,85,255,0.3)" th:text="${user.getEmail()}"></td>
+                        <td th:if="${faculty.getBudgetPlaces() + faculty.getContractPlaces() <= iterStat.index}" style="background-color:rgba(250,0,0,0.3)" th:text="${user.getEmail()}"></td>
+                    </tr>
+                </tbody>
+            </table>
         </div>
     </div>
 

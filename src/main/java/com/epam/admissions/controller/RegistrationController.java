@@ -4,6 +4,7 @@ import com.epam.admissions.entity.User;
 import com.epam.admissions.entity.UserRole;
 import com.epam.admissions.service.UserService;
 import lombok.AllArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.lang.NonNull;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Controller;
@@ -14,6 +15,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import java.util.Optional;
 import java.util.Set;
 
+@Slf4j
 @Controller
 @AllArgsConstructor
 public class RegistrationController {
@@ -39,7 +41,7 @@ public class RegistrationController {
         user.setRoles(Set.of(UserRole.USER));
         user.setPassword(passwordEncoder.encode(user.getPassword()));
 
-        userService.save(user);
+        userService.saveUser(user);
         return "redirect:/login";
     }
 }

@@ -5,7 +5,7 @@
     <header th:replace="fragments/header.html :: header"></header>
 
     <div class="container mt-3">
-        <form th:action="@{/user}" method="post">
+        <form th:action="@{/user/edit}" method="post">
             <input type="text" name="email" th:value="${user.getUsername()}">
             <div th:each="role : ${roles}">
                 <label for="role"></label>

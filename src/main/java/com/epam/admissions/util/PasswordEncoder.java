@@ -1,4 +1,4 @@
-package com.epam.admissions.entity;
+package com.epam.admissions.util;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

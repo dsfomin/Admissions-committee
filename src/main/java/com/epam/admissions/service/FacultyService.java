@@ -40,4 +40,8 @@ public class FacultyService {
     public void deleteById(Long id) {
         facultyRepository.deleteById(id);
     }
+
+    public void finalizeFaculty(Faculty faculty) {
+        facultyRepository.finalizeFaculty(faculty.getId());
+    }
 }

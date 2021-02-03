@@ -4,6 +4,7 @@ import com.epam.admissions.entity.User;
 import com.epam.admissions.entity.UserRole;
 import com.epam.admissions.service.UserService;
 import lombok.AllArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.lang.NonNull;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
@@ -15,6 +16,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+@Slf4j
 @Controller
 @RequestMapping("/user")
 @PreAuthorize("hasAuthority('ADMIN')")
@@ -25,7 +27,7 @@ public class UserController {
 
     @GetMapping
     public String userList(@NonNull Model model) {
-        model.addAttribute("users", userService.findAll());
+        model.addAttribute("users", userService.findAllUsers());
         model.addAttribute("adminRole", UserRole.ADMIN);
 
         return "userList";
@@ -54,7 +56,7 @@ public class UserController {
         return "redirect:/user";
     }
 
-    @PostMapping
+    @PostMapping("/edit")
     public String userSave(
             @RequestParam String email,
             @RequestParam @NonNull Map<String, String> form,
@@ -74,7 +76,7 @@ public class UserController {
             }
         }
 
-        userService.save(user);
+        userService.saveUser(user);
 
         return "redirect:/user";
     }
