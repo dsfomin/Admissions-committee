@@ -1,13 +1,12 @@
 package com.epam.admissions.entity;
 
-import com.epam.admissions.util.UserComparatorByNotes;
-import lombok.*;
-import org.hibernate.annotations.SortComparator;
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import javax.persistence.*;
-import java.util.List;
 import java.util.Set;
-import java.util.TreeSet;
 
 
 @Getter

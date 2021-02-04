@@ -33,7 +33,7 @@ public class RegistrationController {
         Optional<User> userFromDb = userService.findByEmail(user.getEmail());
 
         if (userFromDb.isPresent()) {
-            model.addAttribute("message", "User exists!");
+            model.addAttribute("message", "User already exists!");
             return "registration";
         }
 
@@ -42,6 +42,8 @@ public class RegistrationController {
         user.setPassword(passwordEncoder.encode(user.getPassword()));
 
         userService.saveUser(user);
+        log.info("Created user --- " + user);
+
         return "redirect:/login";
     }
 }

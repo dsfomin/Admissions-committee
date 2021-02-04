@@ -23,6 +23,7 @@ public class User implements UserDetails {
     private String email;
     private String password;
     private Boolean active;
+    private Double averageSchoolNote;
 
     @ElementCollection(targetClass = UserRole.class, fetch = FetchType.EAGER)
     @CollectionTable(name = "user_role", joinColumns = @JoinColumn(name = "user_id"))
@@ -81,5 +82,9 @@ public class User implements UserDetails {
                 "active = " + active + ", " +
                 "selected faculties = " + selectedFaculties +
                 "]";
+    }
+
+    public Double getAverageExamNote() {
+        return notes.stream().mapToDouble(x -> x).average().orElse(0.0);
     }
 }

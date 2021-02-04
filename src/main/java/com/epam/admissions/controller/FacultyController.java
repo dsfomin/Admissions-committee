@@ -13,6 +13,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
+import javax.transaction.Transactional;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -94,9 +95,7 @@ public class FacultyController {
 
     private Set<User> getTopUsersByNotes(Set<User> candidates) {
         return candidates.stream()
-                .sorted(Comparator.comparingDouble(
-                        u -> u.getNotes().stream()
-                        .mapToDouble(x -> x).average().orElse(0.0)))
+                .sorted(Comparator.comparingDouble(User::getAverageExamNote).reversed())
                 .collect(Collectors.toCollection(LinkedHashSet::new));
     }
 
@@ -136,15 +135,23 @@ public class FacultyController {
         return "redirect:/faculty";
     }
 
+    @Transactional
     @PreAuthorize("hasAuthority('USER') && !hasAuthority('ADMIN')")
-    @GetMapping("/{faculty}/participate")
+    @PostMapping("/{faculty}/participate")
     public String participateFaculty(@PathVariable Faculty faculty,
+                                     @RequestParam Double note1,
+                                     @RequestParam Double note2,
+                                     @RequestParam Double note3,
                                      @AuthenticationPrincipal User user) {
+        user.setNotes(List.of(note1, note2, note3));
+
+        userService.saveUser(user);
         userService.participate(user, faculty);
 
         return "redirect:/faculty/" + faculty.getId();
     }
 
+    @PreAuthorize("hasAuthority('ADMIN')")
     @GetMapping("/{faculty}/finalize")
     public String finalizeFaculty(@PathVariable Faculty faculty) {
         facultyService.finalizeFaculty(faculty);
