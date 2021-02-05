@@ -43,7 +43,24 @@
             <td th:text="${faculty.budgetPlaces}"></td>
             <td th:text="${faculty.contractPlaces}"></td>
             <td sec:authorize="hasAuthority('ADMIN')"><a th:href="@{/faculty/edit/{id}(id=${faculty.id})}" th:text="Edit"></a></td>
-            <td sec:authorize="hasAuthority('ADMIN')"><a th:href="@{/faculty/delete/{id}(id=${faculty.id})}" th:text="Delete">Delete</a></td>
+
+            <td sec:authorize="hasAuthority('ADMIN')">
+                <button type="button" class="btn btn-primary" data-bs-toggle="modal" th:data-bs-target="'#deleteFacultyModal' + ${faculty.id}" th:text="Delete"></button>
+                <div class="modal fade" th:id="'deleteFacultyModal' + ${faculty.id}" tabindex="-1" aria-labelledby="deleteFacultyModalLabel" aria-hidden="true">
+                    <div class="modal-dialog">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title" id="deleteFacultyModalLabel">Are u sure u want to delete this faculty?</h5>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                            </div>
+                            <div class="modal-body">
+                                <button type="button" class="btn btn-primary" data-bs-dismiss="modal" th:text="No"></button>
+                                <a class="btn btn-primary" th:href="@{/faculty/delete/{id}(id=${faculty.id})}" th:text="Yes"></a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </td>
         </tr>
         </tbody>
     </table>
@@ -60,6 +77,7 @@
         </div>
     </div>
 </div>
+
 
 
 

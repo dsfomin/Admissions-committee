@@ -1,7 +1,9 @@
 package com.epam.admissions.controller;
 
 import com.epam.admissions.entity.Faculty;
+import com.epam.admissions.entity.FacultyRegistration;
 import com.epam.admissions.entity.User;
+import com.epam.admissions.service.FacultyRegistrationService;
 import com.epam.admissions.service.FacultyService;
 import com.epam.admissions.service.UserService;
 import lombok.AllArgsConstructor;
@@ -10,10 +12,10 @@ import org.springframework.lang.NonNull;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
-import javax.transaction.Transactional;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -26,17 +28,17 @@ public class FacultyController {
 
     private final FacultyService facultyService;
     private final UserService userService;
+    private final FacultyRegistrationService facultyRegistrationService;
 
     private static Integer pageNo = 0;
-    private static Integer pageSize = 10;
+    private static Integer pageSize = 8;
     private static String sortBy = "name";
     private static String order = "asc";
-
 
     @GetMapping
     public String userList(
             @RequestParam(defaultValue = "0") Integer pageNo,
-            @RequestParam(defaultValue = "10") Integer pageSize,
+            @RequestParam(defaultValue = "8") Integer pageSize,
             @RequestParam(defaultValue = "name") String sortBy,
             @RequestParam(defaultValue = "asc") String order,
             @NonNull Model model
@@ -69,19 +71,17 @@ public class FacultyController {
                 + pageSize + "&sortBy=" + sortBy + "&order=" + order;
     }
 
+    @Transactional
     @GetMapping("{faculty}")
     public String facultyPage(@PathVariable Faculty faculty,
                               @AuthenticationPrincipal User user,
                               @NonNull Model model) {
 
-        User userFromDb = userService.findByEmail(user.getEmail()).orElseThrow(() ->
-                new IllegalStateException("user with such name not found"));
+        User userFromDb = userService.findByEmail(user.getEmail()).orElseThrow(IllegalStateException::new);
 
         model.addAttribute("faculty", faculty);
         model.addAttribute("alreadyParticipate", isUserAlreadyParticipate(userFromDb, faculty));
-        model.addAttribute("budgetPlaces", faculty.getBudgetPlaces());
-        model.addAttribute("contractPlaces", faculty.getContractPlaces());
-        model.addAttribute("usersTop", getTopUsersByNotes(faculty.getCandidates()));
+        model.addAttribute("usersTop", getTopUsersByNotes(facultyRegistrationService.findAllFacultyRegistrations(faculty)));
 
         return "facultyPage";
     }
@@ -89,13 +89,19 @@ public class FacultyController {
     private Boolean isUserAlreadyParticipate(User user, Faculty faculty) {
         return user.getSelectedFaculties()
                 .stream()
+                .map(FacultyRegistration::getFaculty)
                 .map(Faculty::getName)
                 .anyMatch(faculty.getName()::equals);
     }
 
-    private Set<User> getTopUsersByNotes(Set<User> candidates) {
-        return candidates.stream()
-                .sorted(Comparator.comparingDouble(User::getAverageExamNote).reversed())
+
+    private Set<User> getTopUsersByNotes(List<FacultyRegistration> facultyRegistrations) {
+        return facultyRegistrations.stream()
+                .sorted(Comparator
+                        .comparingDouble(FacultyRegistration::getAverageExamNote)
+                        .thenComparing(FacultyRegistration::getUserAverageSchoolNote)
+                        .reversed())
+                .map(FacultyRegistration::getUser)
                 .collect(Collectors.toCollection(LinkedHashSet::new));
     }
 
@@ -104,7 +110,7 @@ public class FacultyController {
             @RequestParam String name,
             @RequestParam Integer contractPlaces,
             @RequestParam Integer budgetPlaces,
-            @RequestParam ("facultyId") @NonNull Faculty faculty
+            @RequestParam("facultyId") @NonNull Faculty faculty
     ) {
         faculty.setName(name);
         faculty.setContractPlaces(contractPlaces);
@@ -135,7 +141,6 @@ public class FacultyController {
         return "redirect:/faculty";
     }
 
-    @Transactional
     @PreAuthorize("hasAuthority('USER') && !hasAuthority('ADMIN')")
     @PostMapping("/{faculty}/participate")
     public String participateFaculty(@PathVariable Faculty faculty,
@@ -143,10 +148,13 @@ public class FacultyController {
                                      @RequestParam Double note2,
                                      @RequestParam Double note3,
                                      @AuthenticationPrincipal User user) {
-        user.setNotes(List.of(note1, note2, note3));
+        FacultyRegistration facultyRegistration = new FacultyRegistration();
 
-        userService.saveUser(user);
-        userService.participate(user, faculty);
+        facultyRegistration.setFaculty(faculty);
+        facultyRegistration.setUser(user);
+        facultyRegistration.setNotes(List.of(note1, note2, note3));
+
+        facultyRegistrationService.saveFacultyRegistration(facultyRegistration);
 
         return "redirect:/faculty/" + faculty.getId();
     }

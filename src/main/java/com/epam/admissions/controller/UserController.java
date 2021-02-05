@@ -2,11 +2,13 @@ package com.epam.admissions.controller;
 
 import com.epam.admissions.entity.User;
 import com.epam.admissions.entity.UserRole;
+import com.epam.admissions.service.FacultyRegistrationService;
 import com.epam.admissions.service.UserService;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.lang.NonNull;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -24,6 +26,7 @@ import java.util.stream.Collectors;
 public class UserController {
 
     private final UserService userService;
+    private final FacultyRegistrationService facultyRegistrationService;
 
     @GetMapping
     public String userList(@NonNull Model model) {
@@ -81,4 +84,13 @@ public class UserController {
         return "redirect:/user";
     }
 
+    @PreAuthorize("hasAnyAuthority('USER', 'ADMIN')")
+    @GetMapping("/profile")
+    public String userProfile(@AuthenticationPrincipal User user, Model model) {
+
+        model.addAttribute("facultyRegistration", facultyRegistrationService.findAllFacultyRegistrations(user));
+        model.addAttribute("user", user);
+
+        return "userProfile";
+    }
 }

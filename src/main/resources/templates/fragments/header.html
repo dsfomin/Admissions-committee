@@ -41,7 +41,7 @@
                 <a class="btn btn-primary" th:href="@{/login}">Log In</a>
             </div>
             <div class="me-3" sec:authorize="isAuthenticated()">
-                <div sec:authentication="name"></div>
+                <a sec:authentication="name" th:href="@{/user/profile}"></a>
             </div>
             <div sec:authorize="isAuthenticated()">
                 <form th:action="@{/logout}" th:method="post">

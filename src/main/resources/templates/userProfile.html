@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="fragments/head.html :: head"></head>
+<body>
+
+<header th:replace="fragments/header.html :: header"></header>
+
+<div class="container mt-3">
+    <h3 th:text="'Email: ' + ${user.email}"></h3>
+    <h4 th:text="'Average note in school: ' + ${user.averageSchoolNote}"></h4>
+
+    <h4>Participates: </h4>
+    <table class="table" >
+        <thead>
+            <tr>
+                <td th:text="'Faculty name: '"></td>
+                <td th:text="'Budget places: '"></td>
+                <td th:text="'Contract places: '"></td>
+                <td th:text="'Finalized: '"></td>
+                <td colspan="3" th:text="'Notes: '"></td>
+            </tr>
+        </thead>
+        <tbody>
+            <tr th:each="reg : ${facultyRegistration}">
+                <td th:text="${reg.faculty.name}"></td>
+                <td th:text="${reg.faculty.budgetPlaces}"></td>
+                <td th:text="${reg.faculty.contractPlaces}"></td>
+                <td th:text="${reg.faculty.finalized}"></td>
+
+                <td th:each="note, iterStat : ${reg.notes}">
+                    <p th:text="${note}"></p>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</div>
+
+<div th:replace="fragments/script.html :: script"></div>
+</body>
+</html>

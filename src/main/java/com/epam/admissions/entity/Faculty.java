@@ -23,8 +23,8 @@ public class Faculty {
     private Integer budgetPlaces;
     private Integer contractPlaces;
 
-    @ManyToMany(mappedBy = "selectedFaculties")
-    private Set<User> candidates;
+    @OneToMany(mappedBy = "faculty", cascade = CascadeType.ALL)
+    Set<FacultyRegistration> candidates;
 
     private Boolean finalized;
 
@@ -36,5 +36,9 @@ public class Faculty {
                 "budgetPlaces = " + budgetPlaces + ", " +
                 "contractPlaces = " + contractPlaces + ", " +
                 "]";
+    }
+
+    public boolean hasName(Faculty faculty) {
+        return faculty.name != null;
     }
 }

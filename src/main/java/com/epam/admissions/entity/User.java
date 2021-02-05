@@ -30,15 +30,8 @@ public class User implements UserDetails {
     @Enumerated(EnumType.STRING)
     private Set<UserRole> roles;
 
-    @ManyToMany(fetch = FetchType.EAGER)
-    @JoinTable(
-            name = "user_faculty",
-            joinColumns = @JoinColumn(name = "user_id"),
-            inverseJoinColumns = @JoinColumn(name = "faculty_id"))
-    private Set<Faculty> selectedFaculties;
-
-    @ElementCollection
-    private List<Double> notes;
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
+    Set<FacultyRegistration> selectedFaculties;
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
@@ -82,9 +75,5 @@ public class User implements UserDetails {
                 "active = " + active + ", " +
                 "selected faculties = " + selectedFaculties +
                 "]";
-    }
-
-    public Double getAverageExamNote() {
-        return notes.stream().mapToDouble(x -> x).average().orElse(0.0);
     }
 }

@@ -1,6 +1,5 @@
 package com.epam.admissions.service;
 
-import com.epam.admissions.entity.Faculty;
 import com.epam.admissions.entity.User;
 import com.epam.admissions.repository.UserRepository;
 import lombok.AllArgsConstructor;
@@ -41,9 +40,5 @@ public class UserService implements UserDetailsService {
 
     public void unblockUser(Long id) {
         userRepository.unblockUser(id);
-    }
-
-    public void participate(User user, Faculty faculty) {
-        userRepository.participate(user.getId(), faculty.getId());
     }
 }
