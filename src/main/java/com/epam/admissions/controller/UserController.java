@@ -65,9 +65,10 @@ public class UserController {
             @RequestParam @NonNull Map<String, String> form,
             @RequestParam ("userId") @NonNull User user
             ) {
-        user.setEmail(email);
-        user.getRoles().clear();
 
+        user.setEmail(email);
+
+        user.getRoles().clear();
         Set<String> roles = Arrays
                 .stream(UserRole.values())
                 .map(UserRole::name)
@@ -80,7 +81,6 @@ public class UserController {
         }
 
         userService.saveUser(user);
-
         return "redirect:/user";
     }
 

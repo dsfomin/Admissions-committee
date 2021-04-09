@@ -19,11 +19,13 @@ public class UserService implements UserDetailsService {
 
     @Override
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
-        return userRepository.findByEmail(email).orElseThrow(() -> new IllegalArgumentException("unknown username"));
+        return userRepository.findByEmail(email).orElseThrow(() ->
+                new IllegalArgumentException("User with email: " + email + " not found"));
     }
 
-    public Optional<User> findByEmail(String username) {
-        return userRepository.findByEmail(username);
+    public User findByEmail(String email) {
+        return userRepository.findByEmail(email).orElseThrow(() ->
+                new IllegalArgumentException("User with email: " + email + " not found"));
     }
 
     public User saveUser(User user) {
@@ -40,5 +42,9 @@ public class UserService implements UserDetailsService {
 
     public void unblockUser(Long id) {
         userRepository.unblockUser(id);
+    }
+
+    public Boolean isUserAlreadyExists(User user) {
+        return userRepository.findByEmail(user.getEmail()).isPresent();
     }
 }

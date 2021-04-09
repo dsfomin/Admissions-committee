@@ -1,28 +1,40 @@
 package com.epam.admissions.entity;
 
-import lombok.Getter;
-import lombok.Setter;
-import lombok.ToString;
+import lombok.*;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import javax.persistence.*;
-import java.util.ArrayList;
+import javax.validation.constraints.*;
 import java.util.Collection;
-import java.util.List;
 import java.util.Set;
 
 @Entity
 @Setter
 @Getter
 @Table(name = "usr")
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
 public class User implements UserDetails {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
+    @NotNull(message = "Email shouldn't be empty")
+    @Email(message = "Incorrect email type")
     private String email;
+
+    @NotNull(message = "Password can't be empty")
+    @NotBlank(message = "Password is mandatory")
     private String password;
+
     private Boolean active;
+
+    @Min(value = 0, message = "{validation.user.note}")
+    @Max(value = 12, message = "{validation.user.note}")
+    @NotNull(message = "Note is mandatory")
     private Double averageSchoolNote;
 
     @ElementCollection(targetClass = UserRole.class, fetch = FetchType.EAGER)

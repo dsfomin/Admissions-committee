@@ -42,7 +42,7 @@
             <td><a th:href="@{/faculty/{id}(id=${faculty.id})}" th:text="${faculty.name}"></a></td>
             <td th:text="${faculty.budgetPlaces}"></td>
             <td th:text="${faculty.contractPlaces}"></td>
-            <td sec:authorize="hasAuthority('ADMIN')"><a th:href="@{/faculty/edit/{id}(id=${faculty.id})}" th:text="Edit"></a></td>
+            <td sec:authorize="hasAuthority('ADMIN')"><a class="btn btn-primary" th:href="@{/faculty/edit/{id}(id=${faculty.id})}" th:text="Edit"></a></td>
 
             <td sec:authorize="hasAuthority('ADMIN')">
                 <button type="button" class="btn btn-primary" data-bs-toggle="modal" th:data-bs-target="'#deleteFacultyModal' + ${faculty.id}" th:text="Delete"></button>

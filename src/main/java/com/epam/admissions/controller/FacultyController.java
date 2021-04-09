@@ -46,10 +46,7 @@ public class FacultyController {
         model.addAttribute("sortBy", sortBy);
         model.addAttribute("facultiesPage", facultyService.findAll(pageNo, pageSize, order, sortBy));
 
-        FacultyController.pageNo = pageNo;
-        FacultyController.pageSize = pageSize;
-        FacultyController.sortBy = sortBy;
-        FacultyController.order = order;
+        FacultyController.savePaginationParams(pageNo, pageSize, sortBy, order);
 
         return "facultyList";
     }
@@ -77,32 +74,14 @@ public class FacultyController {
                               @AuthenticationPrincipal User user,
                               @NonNull Model model) {
 
-        User userFromDb = userService.findByEmail(user.getEmail()).orElseThrow(IllegalStateException::new);
+        User userFromDb = userService.findByEmail(user.getEmail());
 
         model.addAttribute("faculty", faculty);
         model.addAttribute("alreadyParticipate", isUserAlreadyParticipate(userFromDb, faculty));
-        model.addAttribute("usersTop", getTopUsersByNotes(facultyRegistrationService.findAllFacultyRegistrations(faculty)));
+        model.addAttribute("usersTop",
+                getTopUsersByNotes(facultyRegistrationService.findAllFacultyRegistrations(faculty)));
 
         return "facultyPage";
-    }
-
-    private Boolean isUserAlreadyParticipate(User user, Faculty faculty) {
-        return user.getSelectedFaculties()
-                .stream()
-                .map(FacultyRegistration::getFaculty)
-                .map(Faculty::getName)
-                .anyMatch(faculty.getName()::equals);
-    }
-
-
-    private Set<User> getTopUsersByNotes(List<FacultyRegistration> facultyRegistrations) {
-        return facultyRegistrations.stream()
-                .sorted(Comparator
-                        .comparingDouble(FacultyRegistration::getAverageExamNote)
-                        .thenComparing(FacultyRegistration::getUserAverageSchoolNote)
-                        .reversed())
-                .map(FacultyRegistration::getUser)
-                .collect(Collectors.toCollection(LinkedHashSet::new));
     }
 
     @PostMapping
@@ -126,11 +105,11 @@ public class FacultyController {
         return "addFaculty";
     }
 
+    @Transactional
     @PostMapping("/add")
     public String addFaculty(@NonNull Faculty faculty, Model model) {
-        Optional<Faculty> facultyFromDb = facultyService.findByName(faculty.getName());
 
-        if (facultyFromDb.isPresent()) {
+        if (facultyService.isFacultyAlreadyExists(faculty)) {
             model.addAttribute("message", "Faculty with such name already exists!");
             return "addFaculty";
         }
@@ -148,11 +127,11 @@ public class FacultyController {
                                      @RequestParam Double note2,
                                      @RequestParam Double note3,
                                      @AuthenticationPrincipal User user) {
-        FacultyRegistration facultyRegistration = new FacultyRegistration();
-
-        facultyRegistration.setFaculty(faculty);
-        facultyRegistration.setUser(user);
-        facultyRegistration.setNotes(List.of(note1, note2, note3));
+        FacultyRegistration facultyRegistration = FacultyRegistration.builder()
+                .faculty(faculty)
+                .user(user)
+                .notes(List.of(note1, note2, note3))
+                .build();
 
         facultyRegistrationService.saveFacultyRegistration(facultyRegistration);
 
@@ -164,5 +143,30 @@ public class FacultyController {
     public String finalizeFaculty(@PathVariable Faculty faculty) {
         facultyService.finalizeFaculty(faculty);
         return "redirect:/faculty/" + faculty.getId();
+    }
+
+    private static void savePaginationParams(Integer pageNo, Integer pageSize, String sortBy, String order) {
+        FacultyController.pageNo = pageNo;
+        FacultyController.pageSize = pageSize;
+        FacultyController.sortBy = sortBy;
+        FacultyController.order = order;
+    }
+
+    private Boolean isUserAlreadyParticipate(User user, Faculty faculty) {
+        return user.getSelectedFaculties()
+                .stream()
+                .map(FacultyRegistration::getFaculty)
+                .map(Faculty::getName)
+                .anyMatch(faculty.getName()::equals);
+    }
+
+    private Set<User> getTopUsersByNotes(List<FacultyRegistration> facultyRegistrations) {
+        return facultyRegistrations.stream()
+                .sorted(Comparator
+                        .comparingDouble(FacultyRegistration::getAverageExamNote)
+                        .thenComparing(FacultyRegistration::getUserAverageSchoolNote)
+                        .reversed())
+                .map(FacultyRegistration::getUser)
+                .collect(Collectors.toCollection(LinkedHashSet::new));
     }
 }

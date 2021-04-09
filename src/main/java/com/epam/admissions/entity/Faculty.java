@@ -26,6 +26,11 @@ public class Faculty {
     @OneToMany(mappedBy = "faculty", cascade = CascadeType.ALL)
     Set<FacultyRegistration> candidates;
 
+//    @ElementCollection(targetClass = Subject.class, fetch = FetchType.EAGER)
+//    @CollectionTable(name = "faculty_subject", joinColumns = @JoinColumn(name = "faculty_id"))
+//    @Enumerated(EnumType.STRING)
+//    private Set<Subject> examSubjects;
+
     private Boolean finalized;
 
     @Override

@@ -22,5 +22,5 @@ public interface FacultyRepository extends JpaRepository<Faculty, Long> {
     @Modifying
     @Query("update Faculty f set f.finalized=1 where f.id=?1")
     @Transactional
-    void finalizeFaculty(Long id);
+    int finalizeFaculty(Long id);
 }

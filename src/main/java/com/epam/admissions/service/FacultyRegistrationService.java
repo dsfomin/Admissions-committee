@@ -20,8 +20,8 @@ public class FacultyRegistrationService {
     }
 
     public FacultyRegistration findFacultyRegistration(Faculty faculty, User user) {
-        return facultyRegistrationRepository.findByFacultyAndUser(faculty, user).orElseThrow(
-                () -> new IllegalStateException("Unknown faculty registration")
+        return facultyRegistrationRepository.findByFacultyAndUser(faculty, user).orElseThrow(() ->
+                new IllegalStateException("Unknown faculty registration")
         );
     }
 
