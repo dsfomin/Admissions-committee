@@ -8,10 +8,28 @@
         Add new faculty
         <div th:if="${message != null}" th:utext="${message}"></div>
         <form th:action="@{/faculty/add}" method="post">
-            <div><label> Name : <input type="text" name="name"/> </label></div>
+            <div><label> Name : <input type="text" name="name"/></label></div>
             <div><label> Count of budget places : <input type="text" name="budgetPlaces"/> </label></div>
-            <div><label> Count of contract places : <input type="text" name="contractPlaces"/> </label></div>
-            <div><input type="submit" value="Create"/></div>
+            <div><label> Count of contract places : <input type="text" name="contractPlaces"/></label></div>
+            <div><label>Exam Subject 1:
+                <select name="examSubject1">
+                    <option th:each="subject : ${T(com.epam.admissions.entity.Subject).values()}"
+                            th:value="${subject}" th:text="${subject}"></option>
+                </select>
+            </label></div>
+            <div><label>Exam Subject 2:
+                <select name="examSubject2">
+                    <option th:each="subject : ${T(com.epam.admissions.entity.Subject).values()}"
+                            th:value="${subject}" th:text="${subject}"></option>
+                </select>
+            </label></div>
+            <div><label>Exam Subject 3:
+                <select name="examSubject3">
+                    <option th:each="subject : ${T(com.epam.admissions.entity.Subject).values()}"
+                            th:value="${subject}" th:text="${subject}"></option>
+                </select>
+            </label></div>
+            <button th:type="submit" th:utext="Save"></button>
         </form>
     </div>
 

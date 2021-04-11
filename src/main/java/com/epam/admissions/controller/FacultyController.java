@@ -2,6 +2,7 @@ package com.epam.admissions.controller;
 
 import com.epam.admissions.entity.Faculty;
 import com.epam.admissions.entity.FacultyRegistration;
+import com.epam.admissions.entity.Subject;
 import com.epam.admissions.entity.User;
 import com.epam.admissions.service.FacultyRegistrationService;
 import com.epam.admissions.service.FacultyService;
@@ -16,6 +17,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -31,14 +33,14 @@ public class FacultyController {
     private final FacultyRegistrationService facultyRegistrationService;
 
     private static Integer pageNo = 0;
-    private static Integer pageSize = 8;
+    private static Integer pageSize = 5;
     private static String sortBy = "name";
     private static String order = "asc";
 
     @GetMapping
     public String userList(
             @RequestParam(defaultValue = "0") Integer pageNo,
-            @RequestParam(defaultValue = "8") Integer pageSize,
+            @RequestParam(defaultValue = "5") Integer pageSize,
             @RequestParam(defaultValue = "name") String sortBy,
             @RequestParam(defaultValue = "asc") String order,
             @NonNull Model model
@@ -47,7 +49,6 @@ public class FacultyController {
         model.addAttribute("facultiesPage", facultyService.findAll(pageNo, pageSize, order, sortBy));
 
         FacultyController.savePaginationParams(pageNo, pageSize, sortBy, order);
-
         return "facultyList";
     }
 
@@ -76,8 +77,16 @@ public class FacultyController {
 
         User userFromDb = userService.findByEmail(user.getEmail());
 
+        Map<Subject, Double> userNotes = user.getNotes();
+        Set<Subject> facultySubjectsSet = getFacultySubjects(faculty);
+        Map<Subject, Double> facultySubjects = new HashMap<>();
+
+        facultySubjectsSet.forEach(e -> facultySubjects.put(e, null));
+
+        model.addAttribute("facultySubjects", mapNotesIntersection(userNotes, facultySubjects));
         model.addAttribute("faculty", faculty);
         model.addAttribute("alreadyParticipate", isUserAlreadyParticipate(userFromDb, faculty));
+
         model.addAttribute("usersTop",
                 getTopUsersByNotes(facultyRegistrationService.findAllFacultyRegistrations(faculty)));
 
@@ -96,7 +105,6 @@ public class FacultyController {
         faculty.setBudgetPlaces(budgetPlaces);
 
         facultyService.save(faculty);
-
         return "redirect:/faculty";
     }
 
@@ -107,32 +115,55 @@ public class FacultyController {
 
     @Transactional
     @PostMapping("/add")
-    public String addFaculty(@NonNull Faculty faculty, Model model) {
-
-        if (facultyService.isFacultyAlreadyExists(faculty)) {
+    public String addFaculty( @RequestParam String name,
+                              @RequestParam Integer contractPlaces,
+                              @RequestParam Integer budgetPlaces,
+                              @RequestParam Subject examSubject1,
+                              @RequestParam Subject examSubject2,
+                              @RequestParam Subject examSubject3,
+                              Model model) {
+        if (facultyService.isFacultyAlreadyExistsByName(name)) {
             model.addAttribute("message", "Faculty with such name already exists!");
             return "addFaculty";
         }
 
-        faculty.setFinalized(false);
-        facultyService.save(faculty);
+        Faculty faculty = Faculty.builder()
+                .name(name)
+                .budgetPlaces(budgetPlaces)
+                .contractPlaces(contractPlaces)
+                .finalized(false)
+                .examSubjects(Set.of(examSubject1, examSubject2, examSubject3))
+                .build();
 
+        facultyService.save(faculty);
         return "redirect:/faculty";
     }
 
+    @Transactional
     @PreAuthorize("hasAuthority('USER') && !hasAuthority('ADMIN')")
     @PostMapping("/{faculty}/participate")
     public String participateFaculty(@PathVariable Faculty faculty,
-                                     @RequestParam Double note1,
-                                     @RequestParam Double note2,
-                                     @RequestParam Double note3,
+                                     @RequestParam Subject subject1, @RequestParam Double note1,
+                                     @RequestParam Subject subject2, @RequestParam Double note2,
+                                     @RequestParam Subject subject3, @RequestParam Double note3,
                                      @AuthenticationPrincipal User user) {
+
+        Map<Subject, Double> notes = Map.of(
+                subject1, note1,
+                subject2, note2,
+                subject3, note3);
+
         FacultyRegistration facultyRegistration = FacultyRegistration.builder()
                 .faculty(faculty)
                 .user(user)
-                .notes(List.of(note1, note2, note3))
+                .subjects_notes(notes)
+                .dateTime(LocalDateTime.now())
                 .build();
 
+        Map<Subject, Double> notes1 = user.getNotes();
+        notes1.putAll(notes);
+
+        userService.saveUser(user);
         facultyRegistrationService.saveFacultyRegistration(facultyRegistration);
 
         return "redirect:/faculty/" + faculty.getId();
@@ -165,8 +196,24 @@ public class FacultyController {
                 .sorted(Comparator
                         .comparingDouble(FacultyRegistration::getAverageExamNote)
                         .thenComparing(FacultyRegistration::getUserAverageSchoolNote)
+                        .thenComparing(FacultyRegistration::getDateTime)
                         .reversed())
                 .map(FacultyRegistration::getUser)
                 .collect(Collectors.toCollection(LinkedHashSet::new));
+    }
+
+    private Set<Subject> getFacultySubjects(Faculty faculty) {
+        return faculty.getExamSubjects();
+    }
+
+    private Map<Subject, Double> mapNotesIntersection(Map<Subject, Double> map1,
+                                                      Map<Subject, Double> map2) {
+        Map<Subject, Double> result = new HashMap<>(map2);
+        for (Map.Entry<Subject, Double> entry : map1.entrySet()) {
+            if (map2.containsKey(entry.getKey())) {
+                result.put(entry.getKey(), entry.getValue());
+            }
+        }
+        return result;
     }
 }

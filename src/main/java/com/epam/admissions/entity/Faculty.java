@@ -1,9 +1,6 @@
 package com.epam.admissions.entity;
 
-import lombok.EqualsAndHashCode;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 import javax.persistence.*;
 import java.util.Set;
@@ -11,9 +8,11 @@ import java.util.Set;
 
 @Getter
 @Setter
+@Entity
 @EqualsAndHashCode
 @NoArgsConstructor
-@Entity
+@AllArgsConstructor
+@Builder
 public class Faculty {
 
     @Id
@@ -26,10 +25,10 @@ public class Faculty {
     @OneToMany(mappedBy = "faculty", cascade = CascadeType.ALL)
     Set<FacultyRegistration> candidates;
 
-//    @ElementCollection(targetClass = Subject.class, fetch = FetchType.EAGER)
-//    @CollectionTable(name = "faculty_subject", joinColumns = @JoinColumn(name = "faculty_id"))
-//    @Enumerated(EnumType.STRING)
-//    private Set<Subject> examSubjects;
+    @ElementCollection(targetClass = Subject.class, fetch = FetchType.EAGER)
+    @CollectionTable(name = "faculty_subject", joinColumns = @JoinColumn(name = "faculty_id"))
+    @Enumerated(EnumType.STRING)
+    private Set<Subject> examSubjects;
 
     private Boolean finalized;
 

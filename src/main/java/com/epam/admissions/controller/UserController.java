@@ -11,12 +11,9 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.*;
-
-import java.util.Arrays;
-import java.util.Map;
-import java.util.Set;
-import java.util.stream.Collectors;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestMapping;
 
 @Slf4j
 @Controller
@@ -36,15 +33,6 @@ public class UserController {
         return "userList";
     }
 
-    @GetMapping("/edit/{user}")
-    public String userEditForm(@PathVariable User user, @NonNull Model model) {
-        model.addAttribute("user", user);
-        model.addAttribute("roles", UserRole.values());
-        model.addAttribute("userRoles", user.getRoles());
-
-        return "userEdit";
-    }
-
     @GetMapping("/block/{user}")
     public String userBlock(@PathVariable @NonNull User user, Model model) {
         userService.blockUser(user.getId());
@@ -59,37 +47,24 @@ public class UserController {
         return "redirect:/user";
     }
 
-    @PostMapping("/edit")
-    public String userSave(
-            @RequestParam String email,
-            @RequestParam @NonNull Map<String, String> form,
-            @RequestParam ("userId") @NonNull User user
-            ) {
-
-        user.setEmail(email);
-
-        user.getRoles().clear();
-        Set<String> roles = Arrays
-                .stream(UserRole.values())
-                .map(UserRole::name)
-                .collect(Collectors.toSet());
-
-        for (String key : form.keySet()) {
-            if (roles.contains(key)) {
-                user.getRoles().add(UserRole.valueOf(key));
-            }
-        }
-
-        userService.saveUser(user);
-        return "redirect:/user";
-    }
-
     @PreAuthorize("hasAnyAuthority('USER', 'ADMIN')")
     @GetMapping("/profile")
-    public String userProfile(@AuthenticationPrincipal User user, Model model) {
+    public String myProfile(@AuthenticationPrincipal User user, Model model) {
 
         model.addAttribute("facultyRegistration", facultyRegistrationService.findAllFacultyRegistrations(user));
         model.addAttribute("user", user);
+        model.addAttribute("myAdminProfile", user.getRoles().contains(UserRole.ADMIN));
+
+        return "userProfile";
+    }
+
+    @PreAuthorize("hasAuthority('ADMIN')")
+    @GetMapping("/profile/{user}")
+    public String userProfile(@PathVariable User user, Model model) {
+
+        model.addAttribute("facultyRegistration", facultyRegistrationService.findAllFacultyRegistrations(user));
+        model.addAttribute("user", user);
+        model.addAttribute("myAdminProfile", false);
 
         return "userProfile";
     }

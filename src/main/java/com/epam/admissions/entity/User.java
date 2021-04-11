@@ -7,6 +7,8 @@ import org.springframework.security.core.userdetails.UserDetails;
 import javax.persistence.*;
 import javax.validation.constraints.*;
 import java.util.Collection;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Set;
 
 @Entity
@@ -42,8 +44,13 @@ public class User implements UserDetails {
     @Enumerated(EnumType.STRING)
     private Set<UserRole> roles;
 
-    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     Set<FacultyRegistration> selectedFaculties;
+
+    @ElementCollection(targetClass = Double.class, fetch = FetchType.EAGER)
+    @CollectionTable(name = "user_subjects", joinColumns = @JoinColumn(name = "user_id"))
+    @MapKeyEnumerated(EnumType.STRING)
+    private Map<Subject, Double> notes = new HashMap<>();
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {

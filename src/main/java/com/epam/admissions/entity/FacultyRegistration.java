@@ -2,9 +2,12 @@ package com.epam.admissions.entity;
 
 
 import lombok.*;
+import org.springframework.format.annotation.DateTimeFormat;
 
 import javax.persistence.*;
-import java.util.List;
+import java.time.LocalDateTime;
+import java.util.HashMap;
+import java.util.Map;
 
 @Getter
 @Setter
@@ -27,45 +30,17 @@ public class FacultyRegistration {
     private Faculty faculty;
 
     @ElementCollection
-    private List<Double> notes;
+    @MapKeyEnumerated(EnumType.STRING)
+    private Map<Subject, Double> subjects_notes = new HashMap<>();
+
+    @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+    private LocalDateTime dateTime;
 
     public Double getAverageExamNote() {
-        return notes.stream().mapToDouble(x -> x).average().orElse(0.0);
+        return subjects_notes.values().stream().mapToDouble(x -> x).average().orElse(0.0);
     }
 
     public Double getUserAverageSchoolNote() {
         return user.getAverageSchoolNote();
-    }
-
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public User getUser() {
-        return user;
-    }
-
-    public void setUser(User user) {
-        this.user = user;
-    }
-
-    public Faculty getFaculty() {
-        return faculty;
-    }
-
-    public void setFaculty(Faculty faculty) {
-        this.faculty = faculty;
-    }
-
-    public List<Double> getNotes() {
-        return notes;
-    }
-
-    public void setNotes(List<Double> notes) {
-        this.notes = notes;
     }
 }

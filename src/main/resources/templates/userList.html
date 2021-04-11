@@ -11,16 +11,14 @@
                 <th>Email</th>
                 <th>Roles</th>
                 <th sec:authorize="hasAuthority('ADMIN')"></th>
-                <th sec:authorize="hasAuthority('ADMIN')"></th>
             </tr>
             </thead>
             <tbody>
             <tr th:each="user : ${users}">
-                <td th:text="${user.username}"></td>
+                <td><a th:href="@{/user/profile/{id}(id=${user.id})}" th:text="${user.email}"></a></td>
                 <td>
                     <span th:each="role, iterStat : ${user.roles}" th:text=" ${role} + (${iterStat.size > iterStat.index + 1} ? ', ' : '')"></span>
                 </td>
-                <td><a class="btn btn-primary" th:if="!${#sets.contains(user.roles, adminRole)}" th:href="@{/user/edit/{id}(id=${user.id})}" th:text="Edit"></a></td>
                 <td>
                     <div th:switch="${user.active}">
                         <p th:case="true"><a class="btn btn-primary" th:if="!${#sets.contains(user.roles, adminRole)}" th:href="@{/user/block/{id}(id=${user.id})}" th:text="Block"></a></p>

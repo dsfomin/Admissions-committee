@@ -43,7 +43,7 @@ public class FacultyService {
         facultyRepository.finalizeFaculty(faculty.getId());
     }
 
-    public Boolean isFacultyAlreadyExists(Faculty faculty) {
-        return facultyRepository.findByName(faculty.getName()).isPresent();
+    public Boolean isFacultyAlreadyExistsByName(String name) {
+        return facultyRepository.findByName(name).isPresent();
     }
 }
