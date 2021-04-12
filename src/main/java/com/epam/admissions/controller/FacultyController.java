@@ -38,7 +38,7 @@ public class FacultyController {
     private static String order = "asc";
 
     @GetMapping
-    public String userList(
+    public String facultyList(
             @RequestParam(defaultValue = "0") Integer pageNo,
             @RequestParam(defaultValue = "5") Integer pageSize,
             @RequestParam(defaultValue = "name") String sortBy,
@@ -73,20 +73,15 @@ public class FacultyController {
     @GetMapping("{faculty}")
     public String facultyPage(@PathVariable Faculty faculty,
                               @AuthenticationPrincipal User user,
-                              @NonNull Model model) {
+                              Model model) {
 
         User userFromDb = userService.findByEmail(user.getEmail());
 
-        Map<Subject, Double> userNotes = user.getNotes();
-        Set<Subject> facultySubjectsSet = getFacultySubjects(faculty);
-        Map<Subject, Double> facultySubjects = new HashMap<>();
-
-        facultySubjectsSet.forEach(e -> facultySubjects.put(e, null));
-
-        model.addAttribute("facultySubjects", mapNotesIntersection(userNotes, facultySubjects));
         model.addAttribute("faculty", faculty);
-        model.addAttribute("alreadyParticipate", isUserAlreadyParticipate(userFromDb, faculty));
-
+        model.addAttribute("alreadyParticipate",
+                isUserAlreadyParticipate(userFromDb, faculty));
+        model.addAttribute("facultySubjects",
+                mapNotesIntersection(user.getNotes(), getFacultySubjectsMap(faculty)));
         model.addAttribute("usersTop",
                 getTopUsersByNotes(facultyRegistrationService.findAllFacultyRegistrations(faculty)));
 
@@ -160,8 +155,7 @@ public class FacultyController {
                 .dateTime(LocalDateTime.now())
                 .build();
 
-        Map<Subject, Double> notes1 = user.getNotes();
-        notes1.putAll(notes);
+        user.getNotes().putAll(notes);
 
         userService.saveUser(user);
         facultyRegistrationService.saveFacultyRegistration(facultyRegistration);
@@ -202,8 +196,10 @@ public class FacultyController {
                 .collect(Collectors.toCollection(LinkedHashSet::new));
     }
 
-    private Set<Subject> getFacultySubjects(Faculty faculty) {
-        return faculty.getExamSubjects();
+    private Map<Subject, Double> getFacultySubjectsMap(Faculty faculty) {
+        Map<Subject, Double> facultySubjects = new HashMap<>();
+        faculty.getExamSubjects().forEach(e -> facultySubjects.put(e, null));
+        return facultySubjects;
     }
 
     private Map<Subject, Double> mapNotesIntersection(Map<Subject, Double> map1,

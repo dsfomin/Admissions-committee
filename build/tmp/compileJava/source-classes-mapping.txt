@@ -2,42 +2,42 @@ com/epam/admissions/util/ExceptionController.java
  com.epam.admissions.util.ExceptionController
 com/epam/admissions/controller/MainController.java
  com.epam.admissions.controller.MainController
-com/epam/admissions/entity/Faculty.java
- com.epam.admissions.entity.Faculty
- com.epam.admissions.entity.Faculty$FacultyBuilder
-com/epam/admissions/service/FacultyService.java
- com.epam.admissions.service.FacultyService
-com/epam/admissions/repository/UserRepository.java
- com.epam.admissions.repository.UserRepository
-com/epam/admissions/repository/FacultyRepository.java
- com.epam.admissions.repository.FacultyRepository
-com/epam/admissions/util/PasswordEncoder.java
- com.epam.admissions.util.PasswordEncoder
-com/epam/admissions/entity/Subject.java
- com.epam.admissions.entity.Subject
-com/epam/admissions/AdmissionsApplication.java
- com.epam.admissions.AdmissionsApplication
-com/epam/admissions/security/MvcConfig.java
- com.epam.admissions.security.MvcConfig
-com/epam/admissions/entity/UserRole.java
- com.epam.admissions.entity.UserRole
-com/epam/admissions/service/UserService.java
- com.epam.admissions.service.UserService
-com/epam/admissions/security/WebSecurityConfig.java
- com.epam.admissions.security.WebSecurityConfig
 com/epam/admissions/service/FacultyRegistrationService.java
  com.epam.admissions.service.FacultyRegistrationService
+com/epam/admissions/service/FacultyService.java
+ com.epam.admissions.service.FacultyService
+com/epam/admissions/controller/UserController.java
+ com.epam.admissions.controller.UserController
+com/epam/admissions/repository/FacultyRepository.java
+ com.epam.admissions.repository.FacultyRepository
+com/epam/admissions/entity/FacultyRegistration.java
+ com.epam.admissions.entity.FacultyRegistration
+ com.epam.admissions.entity.FacultyRegistration$FacultyRegistrationBuilder
+com/epam/admissions/util/PasswordEncoder.java
+ com.epam.admissions.util.PasswordEncoder
+com/epam/admissions/service/UserService.java
+ com.epam.admissions.service.UserService
+com/epam/admissions/security/MvcConfig.java
+ com.epam.admissions.security.MvcConfig
+com/epam/admissions/security/WebSecurityConfig.java
+ com.epam.admissions.security.WebSecurityConfig
 com/epam/admissions/entity/User.java
  com.epam.admissions.entity.User
  com.epam.admissions.entity.User$UserBuilder
 com/epam/admissions/controller/RegistrationController.java
  com.epam.admissions.controller.RegistrationController
-com/epam/admissions/entity/FacultyRegistration.java
- com.epam.admissions.entity.FacultyRegistration
- com.epam.admissions.entity.FacultyRegistration$FacultyRegistrationBuilder
+com/epam/admissions/repository/UserRepository.java
+ com.epam.admissions.repository.UserRepository
 com/epam/admissions/repository/FacultyRegistrationRepository.java
  com.epam.admissions.repository.FacultyRegistrationRepository
+com/epam/admissions/AdmissionsApplication.java
+ com.epam.admissions.AdmissionsApplication
+com/epam/admissions/entity/Subject.java
+ com.epam.admissions.entity.Subject
+com/epam/admissions/entity/Faculty.java
+ com.epam.admissions.entity.Faculty
+ com.epam.admissions.entity.Faculty$FacultyBuilder
+com/epam/admissions/entity/UserRole.java
+ com.epam.admissions.entity.UserRole
 com/epam/admissions/controller/FacultyController.java
  com.epam.admissions.controller.FacultyController
-com/epam/admissions/controller/UserController.java
- com.epam.admissions.controller.UserController

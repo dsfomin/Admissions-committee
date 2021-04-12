@@ -31,7 +31,8 @@ public class FacultyRegistration {
 
     @ElementCollection
     @MapKeyEnumerated(EnumType.STRING)
-    private Map<Subject, Double> subjects_notes = new HashMap<>();
+    //@Builder.Default
+    private Map<Subject, Double> subjects_notes;
 
     @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime dateTime;

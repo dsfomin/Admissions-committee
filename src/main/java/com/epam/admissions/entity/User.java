@@ -50,7 +50,8 @@ public class User implements UserDetails {
     @ElementCollection(targetClass = Double.class, fetch = FetchType.EAGER)
     @CollectionTable(name = "user_subjects", joinColumns = @JoinColumn(name = "user_id"))
     @MapKeyEnumerated(EnumType.STRING)
-    private Map<Subject, Double> notes = new HashMap<>();
+    //@Builder.Default
+    private Map<Subject, Double> notes;
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
